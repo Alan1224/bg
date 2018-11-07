@@ -1,0 +1,6 @@
+com\xzf\bg\controller\TCpInfoController.class
+com\xzf\bg\controller\InsteadPayController.class
+com\xzf\bg\controller\TOrderReqController.class
+com\xzf\bg\global\EncodingFilter.class
+com\xzf\bg\global\LoginInterceptor.class
+com\xzf\bg\controller\GlobalController.class

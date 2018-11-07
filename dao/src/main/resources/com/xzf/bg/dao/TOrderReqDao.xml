@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.4//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xzf.bg.dao.TOrderReqDao">
+
+    <resultMap id="tOrderReqMap" type="TOrderReq">
+        <id property="ffId" column="ff_id" javaType="String"/>
+        <result property="cpId" column="cp_id" javaType="String"/>
+        <result property="imsi" column="imsi" javaType="String"/>
+        <result property="imei" column="imei" javaType="String"/>
+        <result property="iccid" column="iccid" javaType="String"/>
+        <result property="mobile" column="mobile" javaType="String"/>
+        <result property="spId" column="sp_id" javaType="String"/>
+        <result property="osversion" column="osversion" javaType="String"/>
+        <result property="nwtype" column="nwtype" javaType="String"/>
+        <result property="ctech" column="ctech" javaType="String"/>
+        <result property="fee" column="fee" javaType="Integer"/>
+        <result property="ip" column="ip" javaType="String"/>
+        <result property="province" column="province" javaType="String"/>
+        <result property="cpParam" column="cp_param" javaType="String"/>
+        <result property="isSyn" column="is_syn" javaType="String"/>
+        <result property="isSuccess" column="is_success" javaType="Integer"/>
+        <result property="synStatus" column="syn_status" javaType="String"/>
+        <result property="sdkResult" column="sdk_result" javaType="String"/>
+        <result property="pck" column="pck" javaType="String"/>
+        <result property="app" column="app" javaType="String"/>
+        <result property="sdkVer" column="sdk_ver" javaType="String"/>
+        <result property="createTime" column="create_time" javaType="java.util.Date"/>
+        <result property="updateTime" column="update_time" javaType="java.util.Date"/>
+    </resultMap>
+    <resultMap id="rateTime" type="com.xzf.bg.entity.RateTime">
+        <result property="cpId" column="id" javaType="String"/>
+        <result property="name" column="name" javaType="String"/>
+        <result property="count" column="polaris" javaType="Integer"/>
+        <result property="success" column="success" javaType="Integer"/>
+        <result property="fee" column="fee" javaType="Integer"/>
+        <result property="successFee" column="success_fee" javaType="Integer"/>
+    </resultMap>
+    <!--根据下游单号查询订单信息-->
+    <select id="selectByCpParam" parameterType="String" resultMap="tOrderReqMap">
+        select * from t_order_req_${month} where cp_param=#{cpParam}
+    </select>
+    <!--根据平台单号查询订单信息-->
+    <select id="selectByFfId" parameterType="String" resultMap="tOrderReqMap">
+        select * from t_order_req_${month} where ff_id=#{ffId}
+    </select>
+    <!--查询限制时间内的成功的个数-->
+    <select id="selectSuccess" parameterType="String" resultType="Double">
+        <if test="timeType != null and timeType == 'HOUR'">
+            select count(*) from t_order_req_${month}
+              where create_time>SUBDATE(NOW(), INTERVAL 1 HOUR)
+              and NOW() and is_success='1' GROUP BY cp_id
+        </if>
+        <if test="timeType != null and timeType == 'MINUTE'">
+            select count(*) from t_order_req_${month}
+            where create_time>SUBDATE(NOW(), INTERVAL 30 MINUTE)
+            and NOW() and is_success='1' GROUP BY cp_id
+        </if>
+        <if test="timeType != null and timeType == 'DAY'">
+            select count(*) FROM t_order_req_${month} WHERE create_time>SUBDATE(date(now())+1,INTERVAL 1 DAY)
+            and NOW() and is_success='1' GROUP BY cp_id
+        </if>
+    </select>
+    <!--查询限制时间内的订单数-->
+    <select id="selectCount" parameterType="String" resultType="Integer">
+        <if test="timeType != null and timeType == 'HOUR'">
+            select count(*) from t_order_req_${month} WHERE create_time>SUBDATE(NOW(),INTERVAL 1 HOUR) GROUP BY cp_id
+        </if>
+        <if test="timeType != null and timeType == 'MINUTE'">
+            select count(*) from t_order_req_${month} WHERE create_time>SUBDATE(NOW(),INTERVAL 30 MINUTE) GROUP BY cp_id
+        </if>
+        <if test="timeType != null and timeType == 'DAY'">
+            select count(*) FROM t_order_req_${month} WHERE create_time>SUBDATE(date(now())+1,INTERVAL 1 DAY) GROUP BY cp_id
+        </if>
+    </select>
+
+    <!--限制时间内所有的金额-->
+    <select id="selectFee" parameterType="String" resultType="Double">
+        <if test="timeType != null and timeType == 'HOUR'">
+          select sum(fee) FROM t_order_req_${month} WHERE create_time>SUBDATE(NOW(),INTERVAL 1 HOUR) and is_success = '1' GROUP BY cp_id
+        </if>
+        <if test="timeType != null and timeType == 'MINUTE'">
+            select sum(fee) FROM t_order_req_${month} WHERE create_time>SUBDATE(NOW(),INTERVAL 30 MINUTE) and is_success = '1' GROUP BY cp_id
+        </if>
+        <if test="timeType != null and timeType == 'DAY'">
+            select sum(fee) FROM t_order_req_${month} WHERE create_time>SUBDATE(date(now())+1,INTERVAL 1 DAY) AND is_success='1' GROUP BY cp_id
+        </if>
+    </select>
+
+    <select id="selectIsSuccess" parameterType="String" resultType="Integer">
+        <if test="timeType != null and timeType == 'HOUR'">
+            select count(*) from t_order_req_${month}
+                where create_time>SUBDATE(NOW(), INTERVAL 1 HOUR)
+                and NOW() and cp_id=#{cpId} AND is_success='1'
+        </if>
+        <if test="timeType != null and timeType == 'MINUTE'">
+            select count(*) from t_order_req_${month}
+                where create_time>SUBDATE(NOW(), INTERVAL 30 MINUTE)
+                and NOW() and cp_id=#{cpId} AND is_success='1'
+        </if>
+        <if test="timeType != null and timeType == 'DAY'">
+            select count(*) FROM t_order_req_${month} WHERE create_time>SUBDATE(date(now())+1,INTERVAL 1 DAY)
+            and NOW() and cp_id=#{cpId} AND is_success='1'
+        </if>
+    </select>
+    <update id="updateFeeBack" parameterType="String">
+        update t_order_req_${month} set syn_status='1' where cp_param=#{cpParam} and is_success='1'
+    </update>
+    <!--查询实时成功率的数据-->
+    <!--限制时间内的所有cpid-->
+    <select id="selectCpId" parameterType="String" resultType="String">
+        select ${typeId} FROM t_order_req_${month} WHERE to_days(create_time) = to_days(now()) GROUP BY ${typeId}
+    </select>
+    <select id="selectRateTime" parameterType="String" resultMap="rateTime">
+        SELECT req.${typeId} id, count(*) polaris, SUM(req.is_success) success, SUM(req.fee) fee
+        <if test="typeId == 'cp_id'">
+            ,cp.name name  from t_order_req_${month} req
+        left join t_cp_info cp on cp.cp_id = req.cp_id
+        </if>
+        <if test="typeId == 'sp_id'">
+            ,sd.name name  from t_order_req_${month} req
+            left join t_code_sd sd on sd.sp_id = req.sp_id
+        </if>
+        <if test="timeType == 'minute'">
+            where create_time>SUBDATE(NOW(),INTERVAL ${time} MINUTE) GROUP BY req.${typeId}
+        </if>
+        <if test="timeType == 'day'">
+            where to_days(create_time) = to_days(now()) GROUP BY req.${typeId}
+        </if>
+    </select>
+    <select id="selectRateTimeFee" parameterType="String" resultMap="rateTime">
+        SELECT req.${typeId} id, SUM(req.fee) success_fee
+        <if test="typeId == 'cp_id'">
+            ,cp.name name  from t_order_req_${month} req
+            left join t_cp_info cp on cp.cp_id = req.cp_id
+        </if>
+        <if test="typeId == 'sp_id'">
+            ,sd.name name  from t_order_req_${month} req
+            left join t_code_sd sd on sd.sp_id = req.sp_id
+        </if>
+        <if test="timeType == 'minute'">
+            where create_time>SUBDATE(NOW(),INTERVAL ${time} MINUTE) and is_success='1' GROUP BY req.${typeId}
+        </if>
+        <if test="timeType == 'day'">
+            where to_days(create_time) = to_days(now()) and is_success='1' GROUP BY req.${typeId}
+        </if>
+    </select>
+</mapper>

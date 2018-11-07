@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.4//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xzf.bg.dao.TUserDao">
+    <resultMap id="tUser" type="TUser">
+        <id property="username" column="username" javaType="String"/>
+        <result property="password" column="password" javaType="String"/>
+        <result property="power" column="power" javaType="String"/>
+        <result property="memo" column="memo" javaType="String"/>
+        <result property="cpId" column="cp_id" javaType="String"/>
+        <result property="phone" column="phone" javaType="String"/>
+        <result property="payPassword" column="pay_password" javaType="String"/>
+    </resultMap>
+
+    <!--插入一个用户-->
+    <insert id="insert" parameterType="TUser">
+        insert into t_user (username,password,power,cp_id) values (#{usermane},#{password},#{power},#{cpId})
+    </insert>
+    <!--更新一个用户-->
+    <update id="update">
+        UPDATE t_user SET password = #{password},cp_id=#{cpId},username=#{username},memo=#{memo} WHERE cp_id = #{cpId}
+    </update>
+    <!--根据username查看用户资料-->
+    <select id="selectByName" parameterType="TUser" resultMap="tUser">
+        select * from t_user where username=#{username}
+    </select>
+    <!--查看所有用户-->
+    <select id="selectAll" resultMap="tUser">
+        select * from  t_user
+    </select>
+
+    <select id="selectUser" resultMap="tUser" parameterType="String">
+        select * from t_user where username=#{username} and password=#{password}
+    </select>
+</mapper>

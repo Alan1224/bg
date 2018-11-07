@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.4//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzf.bg.dao.TInsteadDao">
+
+    <resultMap id="tInstead" type="TInstead">
+        <id property="insteadId" column="instead_id" javaType="String"/>
+        <result property="cpId" column="cp_id" javaType="String"/>
+        <result property="money" column="money" javaType="Double"/>
+        <result property="status" column="status" javaType="Integer"/>
+        <result property="createTime" column="create_time" javaType="java.util.Date"/>
+        <result property="updateTime" column="update_time" javaType="java.util.Date"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="tInstead">
+        insert into t_instead (instead_id,cp_id,money,status,create_time,update_time) values (#{insteadId},#{cpId},#{money},#{status},#{createTime},#{createTime})
+    </insert>
+    <select id="select" parameterType="String" resultMap="tInstead">
+        select * from t_instead where cp_id=#{cpId} order by create_time DESC
+    </select>
+    <update id="update" parameterType="tInstead">
+        update t_instead set status=#{status} where instead_id=#{insteadId}
+    </update>
+</mapper>

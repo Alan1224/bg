@@ -1,0 +1,11 @@
+com\xzf\bg\entity\TUser.class
+com\xzf\bg\dao\TInsteadDao.class
+com\xzf\bg\dao\TUserDao.class
+com\xzf\bg\entity\TOrderReq.class
+com\xzf\bg\entity\InsteadInfo.class
+com\xzf\bg\dao\TOrderReqDao.class
+com\xzf\bg\entity\TCpInfo.class
+com\xzf\bg\entity\RateTime.class
+com\xzf\bg\entity\Result.class
+com\xzf\bg\dao\TCpInfoDao.class
+com\xzf\bg\entity\TInstead.class

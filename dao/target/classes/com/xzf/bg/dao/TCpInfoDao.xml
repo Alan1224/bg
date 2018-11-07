@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.4//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzf.bg.dao.TCpInfoDao">
+
+    <resultMap id="resultMap" type="TCpInfo">
+        <id property="cpId" column="cp_id" javaType="String"/>
+        <result property="name" column="name" javaType="String"/>
+        <result property="cpFlag" column="cp_flag" javaType="String"/>
+        <result property="isOpen" column="is_open" javaType="Integer"/>
+        <result property="url" column="url" javaType="String"/>
+        <result property="proport" column="proport" javaType="String"/>
+        <result property="paymentType" column="payment_type" javaType="Integer"/>
+        <result property="synRadio" column="syn_radio" javaType="Integer"/>
+        <result property="isMagic" column="is_magic" javaType="Integer"/>
+        <result property="magicRadio" column="magic_radio" javaType="Integer"/>
+        <result property="localSpId" column="local_sp_id" javaType="String"/>
+        <result property="magicSpId" column="magic_sp_id" javaType="String"/>
+        <result property="memo" column="memo" javaType="String"/>
+        <result property="backMethod" column="back_method" javaType="Integer"/>
+        <result property="isShow" column="is_show" javaType="Integer"/>
+        <result property="cityType" column="city_type" javaType="Integer"/>
+        <result property="cityHide" column="city_hide" javaType="String"/>
+        <result property="synOpen" column="syn_open" javaType="Integer"/>
+        <result property="synProvince" column="syn_province" javaType="String"/>
+        <result property="synNum" column="syn_num" javaType="String"/>
+    </resultMap>
+
+    <resultMap id="instead" type="TCpInfo">
+        <result property="cpId" column="cp_id" javaType="String"/>
+        <result property="money" column="money" javaType="Double"/>
+        <result property="rate" column="rate" javaType="Double"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="TCpInfo">
+        insert into t_cp_info
+          (cp_id,name,cp_flag,is_open,url,proport,payment_type,syn_radio,is_magic,magic_radio,local_sp_id,magic_sp_id,memo,back_method,is_show,city_type,city_hide,syn_open,syn_province,syn_num)
+          value (#{cpId},#{name},'cs','1',#{url},0.45,1,100,0,0,#{localSpId},null,#{name},2,1,0,'广州',0,null,null)
+    </insert>
+
+    <update id="update" parameterType="TCpInfo">
+        update t_cp_info set local_sp_id=#{localSpId},name=#{name},url=#{url} where cp_id=#{cpId}
+    </update>
+    <update id="updateSp" parameterType="TCpInfo">
+        update t_cp_info set local_sp_id=#{localSpId} where cp_id=#{cpId}
+    </update>
+    <!--根据sp和支付宝微信标识更改所有通道-->
+    <update id="updateSpForNameAllType" parameterType="TCpInfo">
+        update t_cp_info set local_sp_id=#{localSpId} where cp_flag=#{cpFlag}
+    </update>
+    <!--修改一个代理下的所有支付宝或微信-->
+    <update id="updateSpForType" parameterType="TCpInfo">
+        update t_cp_info set local_sp_id=#{localSpId} where cp_id like '${cpId}%' and cp_flag=#{cpFlag}
+    </update>
+    <select id="selectByCpId" parameterType="TCpInfo" resultMap="resultMap">
+        select * from t_cp_info where cp_id=#{cpId}
+    </select>
+    <select id="selectAll" resultMap="resultMap">
+        select * from t_cp_info
+    </select>
+    <!--代付模块根据cpId获取Money，和rate-->
+    <select id="selectInstead" parameterType="String" resultMap="instead">
+        select money,rate from t_cp_info where cp_id=#{cpId}
+    </select>
+    <update id="updateInstead" parameterType="String">
+        update t_cp_info set money = money - ${money} where cp_id=#{cpId}
+    </update>
+    <update id="updateInsteadAdd" parameterType="String">
+        update t_cp_info set money = money + ${money} where cp_id=#{cpId}
+    </update>
+</mapper>
